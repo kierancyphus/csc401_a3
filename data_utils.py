@@ -1,8 +1,7 @@
 import os
 from typing import Tuple, List
-import torch
-from random import choice
 
+import torch
 
 Tensor = torch.Tensor
 
@@ -33,7 +32,7 @@ def pool_data(path: str) -> Tuple[List[str], List[int]]:
                 tag = line.strip().split()[1]
                 label = tag[:tag.find("/")]
                 # both lie up and lie down are considered lie
-                label = 0 if label == "T" else 1    # lie detection so 0 if truth, 1 if lie
+                label = 0 if label == "T" else 1  # lie detection so 0 if truth, 1 if lie
                 labels.append(label)
 
     return inputs, labels

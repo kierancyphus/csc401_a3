@@ -1,7 +1,7 @@
-import torch
-import torch.nn as nn
 from typing import Tuple, Optional
 
+import torch
+import torch.nn as nn
 
 Tensor = torch.Tensor
 
@@ -10,6 +10,7 @@ class LieDetector(nn.Module):
     """
     A module for truth-lie classification using MFCC files.
     """
+
     def __init__(self, input_size: int, hidden_size: int) -> None:
         """
         Initializes an instance of the Truth-Lie Detector.
@@ -23,7 +24,7 @@ class LieDetector(nn.Module):
         # TODO: space for classification (0 - truth or 1 - lie)
         self.classifier = ...
 
-    def forward(self, inputs: Tensor, inputs_lengths: Tensor, hidden: Optional[Tuple[Tensor, Tensor]]=None) -> Tensor:
+    def forward(self, inputs: Tensor, inputs_lengths: Tensor, hidden: Optional[Tuple[Tensor, Tensor]] = None) -> Tensor:
         """
         Forward the inputs through the network to get the logits for the batch.
 

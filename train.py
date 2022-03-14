@@ -1,16 +1,16 @@
 import argparse
-from data_utils import *
-from dataset import construct_datasets, zscore_normalize, minmax_normalize
-from model import LieDetector
-import torch
-import torch.optim as optim
-import torch.nn as nn
-from torch.utils.data import SequentialSampler, DataLoader
-import numpy as np
-from typing import Union
 import random
-from collections import OrderedDict
+from typing import Union
 
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import SequentialSampler, DataLoader
+
+from data_utils import *
+from dataset import construct_datasets, minmax_normalize
+from model import LieDetector
 
 name_to_opt = {
     "adam": optim.Adam,
@@ -32,7 +32,7 @@ def parse_params(args: argparse.Namespace) -> Tuple[int, str, float, int]:
 
 def run_one_iteration(model: LieDetector, inputs: Tensor, inputs_lengths: Tensor, labels: Tensor,
                       optimizer: optim.Optimizer, scheduler: optim.lr_scheduler.StepLR, args: argparse.Namespace,
-                      criterion: nn.CrossEntropyLoss, mode: str="train") -> Tuple[Tensor, Tensor]:
+                      criterion: nn.CrossEntropyLoss, mode: str = "train") -> Tuple[Tensor, Tensor]:
     """
     Run 1 iteration of the given batch through the model.
     """
@@ -64,7 +64,7 @@ def get_accuracy(logits: Tensor, labels: Tensor) -> float:
 
 def run_through_data(model: LieDetector, optimizer: optim.Optimizer, scheduler: optim.lr_scheduler.StepLR,
                      criterion: nn.CrossEntropyLoss, data_loader: DataLoader,
-                     args: argparse.Namespace, mode: str="train") -> Union[None, Tuple[float, float]]:
+                     args: argparse.Namespace, mode: str = "train") -> Union[None, Tuple[float, float]]:
     """
     Run the model through the entire dataset. Mode must be one of train or validate
     """

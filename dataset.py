@@ -1,9 +1,9 @@
-from torch.utils.data import Dataset
-import torch
-import numpy as np
-from typing import Tuple, List
 import random
+from typing import Tuple, List
 
+import numpy as np
+import torch
+from torch.utils.data import Dataset
 
 Tensor = torch.Tensor
 
@@ -38,7 +38,8 @@ class MFCCDataset(Dataset):
     """
     A PyTorch dataset for MFCC data.
     """
-    def __init__(self, inputs_paths: List[str], labels: List[int], shuffle: bool=True) -> None:
+
+    def __init__(self, inputs_paths: List[str], labels: List[int], shuffle: bool = True) -> None:
         """
         Initializes an instance of the MFCC dataset.
 
@@ -92,5 +93,5 @@ def construct_datasets(inputs: List[str], labels: List[int], train_split: float,
     testing_labels = labels[len(inputs) - test_size:]
 
     return MFCCDataset(training_data, training_labels), \
-        MFCCDataset(validation_data, validation_labels), \
-        MFCCDataset(testing_data, testing_labels)
+           MFCCDataset(validation_data, validation_labels), \
+           MFCCDataset(testing_data, testing_labels)

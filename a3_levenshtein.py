@@ -1,7 +1,5 @@
-import os
-import numpy as np
-
 dataDir = '/u/cs401/A3/data/'
+
 
 def Levenshtein(r, h):
     """                                                                         
@@ -31,4 +29,4 @@ def Levenshtein(r, h):
 
 
 if __name__ == "__main__":
-    print( 'TODO' ) 
+    print('TODO')
