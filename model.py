@@ -19,10 +19,17 @@ class LieDetector(nn.Module):
         self.hidden_size = hidden_size
 
         # TODO: Create a uni-directional GRU with 1 hidden layer for truth-lie classification
-        self.gru = ...
+        self.gru = nn.GRU(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            # default is single hidden layer and unidirectional
+        )
         # TODO: After running the data through the GRU, perform an affine projection of the hidden space to 2D
         # TODO: space for classification (0 - truth or 1 - lie)
-        self.classifier = ...
+        self.classifier = nn.Linear(
+            in_features=hidden_size,
+            out_features=2,  # binary classification
+        )
 
     def forward(self, inputs: Tensor, inputs_lengths: Tensor, hidden: Optional[Tuple[Tensor, Tensor]] = None) -> Tensor:
         """
