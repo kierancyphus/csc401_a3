@@ -1,0 +1,21 @@
+python train.py --source .\data --lr 0.001 --hidden_size 5 --batch_size 32 --optimizer adam --epochs 10
+ - End of epoch 10. Validation Loss: 0.689. Validation Accuracy: 0.539
+ - Model test accuracy: 0.419
+ - Note that the validation accuracy was the same for the last three epochs, which makes me think that it had
+   gotten as low as it could go.
+
+python train.py --source .\data --lr 0.001 --hidden_size 10 --batch_size 32 --optimizer adam --epochs 10
+ - End of epoch 10. Validation Loss: 0.692. Validation Accuracy: 0.541
+ - Model test accuracy: 0.548
+ - Validation accuracy stopped decreasing after epoch 8
+
+python train.py --source .\data --lr 0.001 --hidden_size 10 --batch_size 32 --optimizer adam --epochs 10
+ - End of epoch 10. Validation Loss: 0.690. Validation Accuracy: 0.382
+ - Model test accuracy: 0.419
+ - Validation accuracy was the same after epoch 5
+
+Although it is hard to guess a trend from three data points, I would assume that the model with hidden size = 5 doesn't
+contain enough parameters to perform well, the model with hidden size = 10 has enough complexity to do slightly better,
+and the largest model has too many parameters to train in such a short amount of time. I'm also not sure whether or not
+the classes are balanced in terms of true / false, and so accuracy might not be the right metric here. Although I
+don't have time to implement this, it would be interesting to see what the precision and recall for these models are.
