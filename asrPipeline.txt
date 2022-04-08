@@ -1,0 +1,20 @@
+Transcripts:
+- "Hello, World" -> short test
+- "She sells seashells by the seashore, the shells that she sells are seashells I'm sure." -> phonetically similar words
+- "According to all known laws of aviation, there is no way a bee should be able to fly. It's wings are too small to
+   get its fat little body off the ground. The bee, of course, flies anyway, because bees don't care what humans think is impossible." -> longer sentence
+
+Procedure to collect sounds and transcribe:
+- All done in the same step
+- Used https://speech-to-text-demo.ng.bluemix.net/ US English Broadband Model (16 kHz)
+
+Performance:
+- "Hello world."
+- "She sells seashells by the seashore the shells that she sells our seashells I'm sure."
+- "According to all known laws of aviation there is no way you should be able to fly its wings are too small to get its
+   fat little body off the ground the bee of course flies anyway because bees don't care what humans think is impossible."
+
+The first "hello world" is pretty spot on, and the second sentence is almost perfect, except that it confused "our" with "are",
+which honestly was not where I was expecting it to mess up in the sentence. The last sentence is almost perfect as well, with
+a few small substitution errors. Overall, I would say it's great, although, it doesn't really pick up on any punctuation
+of any kind.

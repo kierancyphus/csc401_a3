@@ -1,0 +1,27 @@
+Questions
+- How might you improve the classification accuracy of the Gaussian mixtures, without adding more
+  training data?
+    - Remove the assumption of no covariance
+- When would your classifier decide that a given test utterance comes from none of the trained speaker
+  models, and how would your classifier come to this decision?
+    - Given a trained model (and based on the way it's currently implemented), we would never get a response that
+      it is none of them, since given the mfcc, each model will always return a response > 0, and thus we can always
+      take the argmax and return a speaker. However this could be modified by adding a threshold that
+      the probability needs to pass to be considered valid.
+- Can you think of some alternative methods for doing speaker identification that don’t use Gaussian
+  mixtures?
+    - Could use an autoencoder to get a vector representation of the audio file, and then perform K nearest neighbours
+      (although this is roughly the same idea that we are doing here). Another alternative is we could make a
+      classifier using a conv neural net on the log mel spectrogram of the audio files.
+
+Experiments:
+- I noted that each model allows for up to M speakers, but then is only trained on the data of a single speaker.
+  I roughly thought of this as having one component in our GMM fit to the data points, with the others kind of floating
+  around or hugging small clusters of data points (which isn't helpful). Therefore, if we reduce the number of
+  components in each GMM, it shouldn't have any noticeable effect on our test accuracy.
+- Running for num components in [1, 8], we get the following accuracies [0.96875, 0.96875, 0.96875, 0.9375, 1.0, 1.0, 1.0, 1.0]
+- Although it looks like less components have lower accuracies, it's important to remember that there are elements of
+    randomness involved in training that can effect this. To show this, I trained the model 20 times with M=1, with
+    the average accuracy reported at 0.9703125 with std dev 0.020904825250405705. Training again with M=8, we can see
+    that the average accuracy is 0.996875 w/ std dev 0.009375, which actually shows that I was wrong and that the
+    additional components were doing something.

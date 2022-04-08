@@ -166,7 +166,7 @@ def train(speaker, X, M=8, epsilon=0.0, maxIter=20):
     return myTheta
 
 
-def test(mfcc, correctID, models, k=5):
+def test(mfcc, correctID, models, k=5, should_print=True):
     """ Computes the likelihood of 'mfcc' in each model in 'models', where the correct model is 'correctID'
         If k>0, print to stdout the actual speaker and the k best likelihoods in this format:
                [ACTUAL_ID]
@@ -192,7 +192,7 @@ def test(mfcc, correctID, models, k=5):
     # print(f"Chose model: {models[best_model].name} w/ actual model {models[correctID].name}")
     # print(f"likelihood: {np.exp(llhs[best_model])}")
 
-    if k > 0:
+    if k > 0 and should_print:
         print(f"[{models[correctID].name}]")
         llhs_with_index = list(sorted(zip(llhs, range(len(llhs)))))[::-1]
         for i in range(k):
@@ -202,12 +202,13 @@ def test(mfcc, correctID, models, k=5):
     return 1 if (best_model == correctID) else 0
 
 
-def train_iterations(maxIter, should_print=True):
+def train_iterations(maxIter=20, M=1, should_print=True):
     trainThetas = []
     testMFCCs = []
     d = 13
     k = 5  # number of top speakers to display, <= 0 if none
-    M = 8
+    M = M
+    maxIter = maxIter
     epsilon = 0.0
     # train a model for each speaker, and reserve data for testing
 
@@ -225,6 +226,7 @@ def train_iterations(maxIter, should_print=True):
             X = np.empty((0, d))
 
             for file in files:
+                # print(f"file: {file}")
                 myMFCC = np.load(os.path.join(dataDir, speaker, file))
                 X = np.append(X, myMFCC, axis=0)
 
@@ -234,7 +236,7 @@ def train_iterations(maxIter, should_print=True):
     numCorrect = 0
 
     for i in range(len(testMFCCs)):
-        numCorrect += test(testMFCCs[i], i, trainThetas, k)
+        numCorrect += test(testMFCCs[i], i, trainThetas, k, should_print)
     accuracy = 1.0 * numCorrect / len(testMFCCs)
 
     if should_print:
@@ -251,9 +253,29 @@ if __name__ == "__main__":
     as the termination condition isn't ideal since it is always 0, so a valid experiment might be to see what the
     effects of different max iterations are on accuracy. Since we know 20 iterations guarantees 100% accuracy.
     """
-    experiment = False
+    experiment_iter = False
+    experiment_M = False
+    experiment_average_accuracy = True
 
-    if experiment:
+    if experiment_average_accuracy:
+        accuracies = [train_iterations(should_print=False, M=8) for _ in tqdm(range(20))]
+        print("Test results below!")
+        print(f"Average accuracy: {np.average(accuracies)}")
+        print(f"Std deviation: {np.std(accuracies)}")
+
+    if experiment_M:
+        ms = list(range(1, 9))
+        accuracies = [train_iterations(M=m, should_print=False) for m in tqdm(ms)]
+        print("Test results below!")
+        print(ms)
+        print(accuracies)
+        plt.scatter(ms, accuracies)
+        plt.xlabel('Number of components')
+        plt.ylabel('Test Accuracy')
+        plt.title('Test Accuracy vs Number of components')
+        plt.show()
+
+    if experiment_iter:
         max_iters = list(range(0, 20, 2))
         accuracies = [train_iterations(i, False) for i in tqdm(max_iters)]
         print("Test results below!")
