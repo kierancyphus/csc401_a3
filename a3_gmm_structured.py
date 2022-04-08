@@ -203,11 +203,13 @@ def test(mfcc, correctID, models, k=5, should_print=True):
     # print(f"likelihood: {np.exp(llhs[best_model])}")
 
     if k > 0 and should_print:
-        print(f"[{models[correctID].name}]")
+        print(f"{models[correctID].name}")
         llhs_with_index = list(sorted(zip(llhs, range(len(llhs)))))[::-1]
         for i in range(k):
             temp_model = models[llhs_with_index[i][1]]
-            print(f"[{temp_model.name}], [{llhs_with_index[i][0]}]")
+            print(f"{temp_model.name} {llhs_with_index[i][0]}")
+
+        print()
 
     return 1 if (best_model == correctID) else 0
 
@@ -224,8 +226,8 @@ def train_iterations(maxIter=20, M=1, should_print=True):
 
     for subdir, dirs, files in os.walk(dataDir):
         for speaker in dirs:
-            if should_print:
-                print(speaker)
+            # if should_print:
+            #     print(speaker)
 
             files = fnmatch.filter(os.listdir(os.path.join(dataDir, speaker)), "*npy")
             random.shuffle(files)
@@ -255,7 +257,7 @@ def train_iterations(maxIter=20, M=1, should_print=True):
 
 
 if __name__ == "__main__":
-    train_iterations(20)
+    train_iterations(20, M=8)
 
     # experiments
     """
