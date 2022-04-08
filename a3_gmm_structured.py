@@ -23,6 +23,7 @@ class theta:
         self.omega = np.zeros((M, 1))
         self.mu = np.zeros((M, d))
         self.Sigma = np.zeros((M, d))
+        self.precomputed = [None for _ in range(M)]
 
     def precomputedForM(self, m):
         """Put the precomputedforM for given `m` computation here
@@ -30,7 +31,10 @@ class theta:
         This should output a float or equivalent (array of size [1] etc.)
         NOTE: use this in `log_b_m_x` below
         """
-        print("TODO")
+        omega, mu, sigma = self.omega[m, :], self.mu[m, :], self.Sigma[m, :]
+        if self.precomputed[m] is None:
+            self.precomputed[m] = - mu.shape[0] / 2 * np.log(2 * np.pi) - 1 / 2 * np.sum(np.log(sigma))
+        return self.precomputed[m]
 
     def reset_omega(self, omega):
         """Pass in `omega` of shape [M, 1] or [M]
@@ -55,6 +59,9 @@ class theta:
         assert shape == (self._M, self._d), "`Sigma` must be of size (M,d)"
         self.Sigma = Sigma
 
+    def reset_precomputed(self):
+        self.precomputed = [None for _ in range(self._M)]
+
 
 def log_b_m_x(m, x, myTheta):
     """ Returns the log probability of d-dimensional vector x using only
@@ -74,7 +81,9 @@ def log_b_m_x(m, x, myTheta):
     """
     if len(x.shape) == 1:
         # lame version
-        pass
+        omega, mu, sigma = myTheta.omega[m, :], myTheta.mu[m, :], myTheta.Sigma[m, :]
+        original = -1 / 2 * np.sum(((x - mu) ** 2) / sigma)
+        return original + myTheta.precomputedForM(m)
 
     else:
         omega, mu, sigma = myTheta.omega[m, :], myTheta.mu[m, :], myTheta.Sigma[m, :]
@@ -155,6 +164,7 @@ def train(speaker, X, M=8, epsilon=0.0, maxIter=20):
         myTheta.reset_omega(omega)
         myTheta.reset_mu(mu)
         myTheta.reset_Sigma(sigma)
+        myTheta.reset_precomputed()
 
         # compute improvements
         likelihood = np.exp(log_likelihood)
@@ -255,7 +265,7 @@ if __name__ == "__main__":
     """
     experiment_iter = False
     experiment_M = False
-    experiment_average_accuracy = True
+    experiment_average_accuracy = False
 
     if experiment_average_accuracy:
         accuracies = [train_iterations(should_print=False, M=8) for _ in tqdm(range(20))]
