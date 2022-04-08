@@ -7,8 +7,8 @@ from scipy.special import logsumexp
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-# dataDir = "/u/cs401/A3/data/"
-dataDir = "./data"
+dataDir = "/u/cs401/A3/data/"
+# dataDir = "./data"
 
 
 class theta:
@@ -125,7 +125,6 @@ def logLik(log_Bs, myTheta):
         See equation 3 of the handout
     """
     log_omega = np.log(myTheta.omega)
-    # print(f"omega shape: {log_omega.shape}, log_Bs shape: {log_Bs.shape}")
     return np.sum(logsumexp(log_omega + log_Bs, axis=0))
 
 
@@ -134,9 +133,6 @@ def train(speaker, X, M=8, epsilon=0.0, maxIter=20):
     myTheta = theta(speaker, M, X.shape[1])
     # perform initialization (Slide 32)
     # for ex.,
-    # myTheta.reset_omega(omegas_with_constraints)
-    # myTheta.reset_mu(mu_computed_using_data)
-    # myTheta.reset_Sigma(some_appropriate_sigma)
     myTheta.reset_omega(np.ones(myTheta.omega.shape) / myTheta.omega.shape[0])  # uniform distribution
     myTheta.reset_Sigma(np.ones(myTheta.Sigma.shape))  # all standard deviation of 1 - Can't leave as 0
     myTheta.reset_mu(X[np.random.randint(0, X.shape[0], M), :])  # samples the mus as random data points
@@ -145,13 +141,10 @@ def train(speaker, X, M=8, epsilon=0.0, maxIter=20):
     prev_l = -np.inf
     i = 0
     while i <= maxIter and improvement >= epsilon:
-        # print(f"i = {i}")
         # calculate intermediate values
         log_Bs = np.array([log_b_m_x(m, X, myTheta) for m in range(M)])
         log_likelihood = logLik(log_Bs, myTheta)
         log_p_ms = log_p_m_x(log_Bs, myTheta)
-
-        # print(f"Calculated likelihoods, X.shape: {X.shape}, log_Bs.shape: {log_Bs.shape}, log_p_ms.shape: {log_p_ms.shape}")
 
         # Calculate MLE params
         pms = np.exp(log_p_ms)
@@ -159,8 +152,8 @@ def train(speaker, X, M=8, epsilon=0.0, maxIter=20):
         omega = reused / X.shape[0]
         mu = (pms @ X) / reused
         sigma = (pms @ (X ** 2)) / reused - mu ** 2
-        # print(f"omega: {omega.shape}, mu: {mu.shape}, sigma: {sigma.shape}")
 
+        # update step (and reset precomputed)
         myTheta.reset_omega(omega)
         myTheta.reset_mu(mu)
         myTheta.reset_Sigma(sigma)
@@ -168,7 +161,6 @@ def train(speaker, X, M=8, epsilon=0.0, maxIter=20):
 
         # compute improvements
         likelihood = np.exp(log_likelihood)
-        # print(likelihood)
         improvement = likelihood - prev_l
         prev_l = likelihood
         i += 1
@@ -189,18 +181,13 @@ def test(mfcc, correctID, models, k=5, should_print=True):
                S-5A -9.21034037197
         the format of the log likelihood (number of decimal places, or exponent) does not matter
     """
-    # print(f"shape of mfcc = {models[0].mu.shape}")
-    # print(f"len models: {len(models)}")
 
     llhs = []
     for model in models:
         log_Bs = np.array([log_b_m_x(m, mfcc, model) for m in range(model.mu.shape[0])])
         llhs.append(logLik(log_Bs, model))
 
-    # print(f"llhs: {llhs}")
     best_model = np.argmax(llhs)
-    # print(f"Chose model: {models[best_model].name} w/ actual model {models[correctID].name}")
-    # print(f"likelihood: {np.exp(llhs[best_model])}")
 
     if k > 0 and should_print:
         print(f"{models[correctID].name}")
@@ -238,7 +225,6 @@ def train_iterations(maxIter=20, M=1, should_print=True):
             X = np.empty((0, d))
 
             for file in files:
-                # print(f"file: {file}")
                 myMFCC = np.load(os.path.join(dataDir, speaker, file))
                 X = np.append(X, myMFCC, axis=0)
 

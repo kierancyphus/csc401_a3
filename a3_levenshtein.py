@@ -6,7 +6,7 @@ from typing import List
 import numpy as np
 
 dataDir = '/u/cs401/A3/data/'
-dataDir = "./data"
+# dataDir = "./data"
 
 
 def print_backtrack(a):
